@@ -2,7 +2,7 @@
 
 import { EXPLORE_SECONDS } from "@/lib/types";
 
-// Kid-friendly countdown ring + number for the 30s exploration window.
+// Kid-friendly countdown ring + number for the exploration window.
 export function Countdown({ secondsLeft }: { secondsLeft: number }) {
   const pct = Math.max(0, Math.min(1, secondsLeft / EXPLORE_SECONDS));
   const whole = Math.ceil(secondsLeft);

@@ -136,7 +136,7 @@ function SessionInner({
     setCapturing(true);
     try {
       const captured = await requestRecording();
-      setClipTitle("Your 30-second adventure!");
+      setClipTitle(`Your ${EXPLORE_SECONDS}-second adventure!`);
       setClip(captured);
     } catch (err) {
       setCaptureError(
@@ -165,7 +165,7 @@ function SessionInner({
     handleTimeUpRef.current = () => void handleTimeUp();
   }, [handleTimeUp]);
 
-  // Start the 30s timer exactly once, when frames first start streaming.
+  // Start the exploration timer exactly once, when frames first start streaming.
   // We intentionally depend only on the boolean `running` and never return a
   // cleanup here, so the interval survives `running` toggling at run
   // boundaries (the model auto-restarts runs). It's cleared on unmount below.

@@ -64,7 +64,7 @@ export function Landing({ onStart }: { onStart: (a: Adventure) => void }) {
           World Explorer
         </h1>
         <p className="mt-3 text-lg font-semibold text-slate-600">
-          Pick a world and a hero, then explore it for 30 magical seconds!
+          Pick a world and a hero, then explore it for 60 magical seconds!
         </p>
       </header>
 

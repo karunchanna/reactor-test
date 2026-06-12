@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "World Explorer · Reactor LingBot",
   description:
-    "Pick a world and a hero, then explore a real-time AI-generated world for 30 seconds and save your adventure.",
+    "Pick a world and a hero, then explore a real-time AI-generated world for 60 seconds and save your adventure.",
 };
 
 export default function RootLayout({

@@ -11,4 +11,4 @@ export type Adventure = {
 };
 
 /** Seconds the explorer is allowed to roam before the run is captured. */
-export const EXPLORE_SECONDS = 30;
+export const EXPLORE_SECONDS = 60;
