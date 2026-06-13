@@ -19,6 +19,9 @@ import { NowPlaying } from "./NowPlaying";
 import { CommandErrorBanner } from "./CommandErrorBanner";
 import { Countdown } from "./Countdown";
 import { ClipModal } from "./ClipModal";
+import { GameHud } from "./GameHud";
+import { useVideoFrame } from "@/lib/useVideoFrame";
+import { useGameLoopRuntime } from "@/lib/useGameLoopRuntime";
 
 export function ExplorerSession({
   adventure,
@@ -64,6 +67,7 @@ function SessionInner({
   const [phase, setPhase] = useState<Phase>("launching");
   const [snapshot, setSnapshot] = useState<LingbotStateMessage | null>(null);
   const [secondsLeft, setSecondsLeft] = useState(EXPLORE_SECONDS);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [clip, setClip] = useState<Clip | null>(null);
   const [clipTitle, setClipTitle] = useState("Your adventure");
   const [capturing, setCapturing] = useState(false);
@@ -76,6 +80,29 @@ function SessionInner({
   const timeUpHandledRef = useRef(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const handleTimeUpRef = useRef<() => void>(() => {});
+  const applyScenePromptRef = useRef<(prompt: string) => void>(() => {});
+
+  const applyScenePrompt = useCallback(
+    (prompt: string) => {
+      void setPrompt({ prompt });
+    },
+    [setPrompt],
+  );
+
+  useEffect(() => {
+    applyScenePromptRef.current = applyScenePrompt;
+  }, [applyScenePrompt]);
+
+  const { capture } = useVideoFrame();
+
+  const { counters, activeEventLabel, fireScenePrompt } = useGameLoopRuntime({
+    gameLoop: adventure.gameLoop,
+    baseScenePrompt: adventure.scenePrompt,
+    running: !!snapshot?.running,
+    elapsedSeconds,
+    capture,
+    applyScenePrompt: (p) => applyScenePromptRef.current(p),
+  });
 
   // Resolve the load-bearing image_accepted wait.
   useLingbotImageAccepted(() => {
@@ -180,6 +207,7 @@ function SessionInner({
       const elapsed = (Date.now() - startedAt) / 1000;
       const left = Math.max(0, EXPLORE_SECONDS - elapsed);
       setSecondsLeft(left);
+      setElapsedSeconds(elapsed);
       if (left <= 0) {
         if (intervalRef.current) clearInterval(intervalRef.current);
         intervalRef.current = null;
@@ -265,6 +293,13 @@ function SessionInner({
           {/* Fixed 16:10 frame, sized to the largest box that fits the area. */}
           <div className="relative aspect-[16/10] w-full max-w-[calc((100dvh-7rem)*1.6)]">
             <Video />
+            <GameHud
+              gameLoop={adventure.gameLoop}
+              counters={counters}
+              activeEventLabel={activeEventLabel}
+              onScenePrompt={fireScenePrompt}
+              enabled={controlsEnabled}
+            />
             {showLaunchOverlay && <LaunchOverlay status={status} />}
           </div>
         </div>
